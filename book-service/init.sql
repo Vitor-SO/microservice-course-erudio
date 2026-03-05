@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS `book-service`;
+GRANT ALL PRIVILEGES ON `book-service`.* TO 'mysql'@'%';
+FLUSH PRIVILEGES;

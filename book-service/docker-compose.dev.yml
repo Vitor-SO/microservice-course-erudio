@@ -1,0 +1,12 @@
+services:
+  book-db:
+    image: mysql:8.0.0
+    container_name: book-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
