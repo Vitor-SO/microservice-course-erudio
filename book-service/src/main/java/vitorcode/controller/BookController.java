@@ -1,5 +1,7 @@
 package vitorcode.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,15 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import vitorcode.dto.Exchange;
 import vitorcode.environment.InstanceInformationService;
 import vitorcode.model.Book;
 import vitorcode.proxy.ExchangeProxy;
 import vitorcode.repository.BookRepository;
 
-import java.util.HashMap;
-
+@Tag(name = "Book Endpoint")
 @RestController
 @RequestMapping("book-service")
 public class BookController {
@@ -28,6 +28,7 @@ public class BookController {
     @Autowired
     ExchangeProxy exchangeProxy;
 
+    @Operation(summary = "Find a specific book by your id")
     @GetMapping(value = "/{id}/{currency}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Book findBook(@PathVariable("id") Long id, @PathVariable("currency") String currency){
         String port = instanceInformationService.getRetrieveServerPort();

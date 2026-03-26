@@ -20,3 +20,34 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: false
     open-in-view: false
+  management:
+    tracing:
+      sampling:
+        probability: 1.0
+  zipkin:
+    base-url: ${SPRING_ZIPKIN_BASEURL:http://localhost:9411}
+
+resilience4j:
+  ratelimiter:
+    instances:
+      default:
+        limit-for-period: 2
+        limit-refresh-period: 10s
+  bulkhead:
+    instances:
+      default:
+        max-concurrent-calls: 10
+      resilience:
+        max-concurrent-calls: 20
+  retry:
+    instances:
+      foo-bar:
+        max-attempts: 7
+        wait-duration: 1s
+        enable-exponential-backoff: true
+springdoc:
+  api-docs:
+    path: /book-service/v3/api-docs
+  swagger-ui:
+    url: /book-service/v3/api-docs
+  override-server-url: true

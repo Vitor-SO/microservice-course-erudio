@@ -1,0 +1,123 @@
+services:
+  zipkin-server:
+    container_name: zipkin-server
+    image: openzipkin/zipkin:3.5.1
+    ports:
+      - 9411:9411
+    networks:
+      - microservice-network
+
+  naming-server:
+    container_name: naming-server
+    build:
+      context: ./naming-server
+      dockerfile: Dockerfile
+    depends_on:
+      - zipkin-server
+    ports:
+      - 8761:8761
+    networks:
+      - microservice-network
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - zipkin-server
+      - naming-server
+    environment:
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+    ports:
+      - 8765:8765
+    networks:
+      - microservice-network
+
+  book-db:
+    image: mysql:9.3.0
+    container_name: book-db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: admin123
+      MYSQL_DATABASE: book-service
+    ports:
+      - 3310:3306
+    networks:
+      - microservice-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "docker", "-padmin123" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  exchange-db:
+    image: mysql:9.3.0
+    container_name: exchange-db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: admin123
+      MYSQL_DATABASE: exchange-service
+    ports:
+      - 3308:3306
+    networks:
+      - microservice-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "docker", "-padmin123" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  exchange-service:
+    container_name: exchange-service
+    build:
+      context: ./exchange-service
+      dockerfile: Dockerfile
+    depends_on:
+      exchange-db:
+        condition: service_healthy
+      naming-server:
+        condition: service_started
+      zipkin-server:
+        condition: service_started
+    ports:
+      - 8000:8000
+    networks:
+      - microservice-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://exchange-db:3306/exchange-service?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+
+  book-service:
+    container_name: book-service
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    depends_on:
+      book-db:
+        condition: service_healthy
+      naming-server:
+        condition: service_started
+      zipkin-server:
+        condition: service_started
+    ports:
+      - 8100:8100
+    networks:
+      - microservice-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://book-db:3306/book-service?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
+
+networks:
+   microservice-network:
+     name: microservice-network
+     driver: bridge

@@ -1,5 +1,7 @@
 package vitorcode.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import vitorcode.repository.ExchangeRepository;
 
 import java.math.BigDecimal;
 
+@Tag(name = "Exchange Endpoint")
 @RestController
 @RequestMapping("exchange-service")
 public class ExchangeController {
@@ -23,6 +26,7 @@ public class ExchangeController {
     @Autowired
     ExchangeRepository repository;
 
+    @Operation(summary = "Get an exchange from amount of currency")
     @GetMapping(value ="/{amount}/{from}/{to}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Exchange getExchange(
             @PathVariable("amount") BigDecimal amount,

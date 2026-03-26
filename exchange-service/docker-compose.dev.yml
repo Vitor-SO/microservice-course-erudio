@@ -1,6 +1,6 @@
 services:
   exchange-db:
-    image: mysql:8.0.0
+    image: mysql:9.3.0
     container_name: exchange-db
     environment:
       MYSQL_ROOT_PASSWORD: root
