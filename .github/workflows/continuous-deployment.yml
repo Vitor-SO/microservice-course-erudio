@@ -41,7 +41,7 @@ jobs:
     - name: Docker Compose Build
       working-directory: .
       env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         MYSQL_ROOT_PASSWORD: ${{ secrets.MICROSERVICE_COURSE_MYSQL_ROOT_PASSWORD }}
         MYSQL_USER: ${{ secrets.MICROSERVICE_COURSE_MYSQL_USER }}
         MYSQL_PASSWORD: ${{ secrets.MICROSERVICE_COURSE_MYSQL_PASSWORD }}
@@ -52,7 +52,7 @@ jobs:
     - name: Push Docker Images to Docker Hub
       working-directory: .
       env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       run: |
         export TAG=snapshot-$(date +%Y%m%d)
         docker compose push
