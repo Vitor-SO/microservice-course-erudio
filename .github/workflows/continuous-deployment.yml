@@ -42,7 +42,10 @@ jobs:
       working-directory: .
       run: |
         export TAG=snapshot-$(date +%Y%m%d)
-        docker compose -f docker-compose.dev.yml build
+        MYSQL_ROOT_PASSWORD: ${{ secrets.MICROSERVICE_COURSE_MYSQL_ROOT_PASSWORD }}
+        MYSQL_USER: ${{ secrets.MICROSERVICE_COURSE_MYSQL_USER }}
+        MYSQL_PASSWORD: ${{ secrets.MICROSERVICE_COURSE_MYSQL_PASSWORD }}
+        docker compose build
 
     - name: Push Docker Images to Docker Hub
       working-directory: .
