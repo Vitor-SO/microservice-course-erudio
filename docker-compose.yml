@@ -8,7 +8,7 @@ services:
       - microservice-network
 
   naming-server:
-    image:  ${DOCKER_HUB_USERNAME}/naming-server:${TAG:-snapshot}
+    image:  ${DOCKERHUB_USERNAME}/naming-server:${TAG:-snapshot}
     container_name: naming-server
     build:
       context: ./naming-server
@@ -21,7 +21,7 @@ services:
       - microservice-network
 
   api-gateway:
-    image:  ${DOCKER_HUB_USERNAME}/api-gateway:${TAG:-snapshot}
+    image:  ${DOCKERHUB_USERNAME}/api-gateway:${TAG:-snapshot}
     container_name: api-gateway
     build:
       context: ./api-gateway
@@ -74,7 +74,7 @@ services:
       retries: 5
 
   exchange-service:
-    image:  ${DOCKER_HUB_USERNAME}/exchange-service:${TAG:-snapshot}
+    image:  ${DOCKERHUB_USERNAME}/exchange-service:${TAG:-snapshot}
     container_name: exchange-service
     build:
       context: ./exchange-service
@@ -98,7 +98,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
 
   book-service:
-    image:  ${DOCKER_HUB_USERNAME}/book-service:${TAG:-snapshot}
+    image:  ${DOCKERHUB_USERNAME}/book-service:${TAG:-snapshot}
     container_name: book-service
     build:
       context: ./book-service
