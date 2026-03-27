@@ -8,6 +8,7 @@ services:
       - microservice-network
 
   naming-server:
+    image:  ${DOCKER_USERNAME}/naming-server:${TAG:-snapshot}
     container_name: naming-server
     build:
       context: ./naming-server
@@ -20,6 +21,7 @@ services:
       - microservice-network
 
   api-gateway:
+    image:  ${DOCKER_USERNAME}/api-gateway:${TAG:-snapshot}
     container_name: api-gateway
     build:
       context: ./api-gateway
@@ -39,16 +41,16 @@ services:
     image: mysql:9.3.0
     container_name: book-db
     environment:
-      MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_USER: docker
-      MYSQL_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: book-service
     ports:
       - 3310:3306
     networks:
       - microservice-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "docker", "-padmin123" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -57,21 +59,22 @@ services:
     image: mysql:9.3.0
     container_name: exchange-db
     environment:
-      MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_USER: docker
-      MYSQL_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: exchange-service
     ports:
       - 3308:3306
     networks:
       - microservice-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "docker", "-padmin123" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   exchange-service:
+    image:  ${DOCKER_USERNAME}/exchange-service:${TAG:-snapshot}
     container_name: exchange-service
     build:
       context: ./exchange-service
@@ -89,12 +92,13 @@ services:
       - microservice-network
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://exchange-db:3306/exchange-service?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
-      SPRING_DATASOURCE_USERNAME: docker
-      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
 
   book-service:
+    image:  ${DOCKER_USERNAME}/book-service:${TAG:-snapshot}
     container_name: book-service
     build:
       context: ./book-service
@@ -112,8 +116,8 @@ services:
       - microservice-network
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://book-db:3306/book-service?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
-      SPRING_DATASOURCE_USERNAME: docker
-      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       SPRING_ZIPKIN_BASEURL: http://zipkin-server:9411
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
 

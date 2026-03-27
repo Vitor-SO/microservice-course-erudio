@@ -43,3 +43,11 @@ jobs:
       run: |
         export TAG=snapshot-$(date +%Y%m%d)
         docker compose -f docker-compose.dev.yml build
+
+    - name: Push Docker Images to Docker Hub
+      working-directory: .
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      run: |
+        export TAG=snapshot-$(date +%Y%m%d)
+        docker compose push
