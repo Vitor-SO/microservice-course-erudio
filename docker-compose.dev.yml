@@ -1,13 +1,14 @@
 services:
   zipkin-server:
-    container_name: zipkin-server
     image: openzipkin/zipkin:3.5.1
+    container_name: zipkin-server
     ports:
       - 9411:9411
     networks:
       - microservice-network
 
   naming-server:
+    image: naming-server:${TAG:-snapshot}
     container_name: naming-server
     build:
       context: ./naming-server
@@ -20,6 +21,7 @@ services:
       - microservice-network
 
   api-gateway:
+    image: api-gateway::${TAG:-snapshot}
     container_name: api-gateway
     build:
       context: ./api-gateway
@@ -72,6 +74,7 @@ services:
       retries: 5
 
   exchange-service:
+    image: exchange-service:${TAG:-snapshot}
     container_name: exchange-service
     build:
       context: ./exchange-service
@@ -95,6 +98,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka
 
   book-service:
+    image: book-service:${TAG:-snapshot}
     container_name: book-service
     build:
       context: ./book-service

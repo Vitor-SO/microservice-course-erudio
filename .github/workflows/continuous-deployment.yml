@@ -40,4 +40,6 @@ jobs:
 
     - name: Docker Compose Build
       working-directory: .
-      run: docker compose -f docker-compose.dev.yml build
+      run: |
+        export TAG=snapshot-$(date +%Y%m%d)
+        docker compose -f docker-compose.dev.yml build
